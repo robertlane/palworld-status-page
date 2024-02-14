@@ -1,0 +1,44 @@
+html {
+    font-family: Arial, Helvetica, sans-serif;
+    background: no-repeat top url("background.jpg"), black;
+    display: flex;
+    justify-content: center;
+}
+
+body {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 1rem;
+    margin: 1rem;
+    padding: 0.5rem;
+    max-width: 1024px;
+}
+
+h1 {
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
+    text-transform: uppercase;
+    text-decoration: underline;
+}
+
+main {
+    margin: 1rem;
+    display: flex;
+    flex-flow: column;
+}
+
+main div {
+    margin: 1rem;
+    padding: 1rem;
+    border: 1px solid lightgray;
+    border-radius: 1rem;
+    background-color: azure;
+    flex-basis: auto;
+    text-align: center;
+    box-shadow: 0px 15px 10px 5px rgba(0, 0, 0, 0.75);
+}
+
+main h2 {
+    text-decoration: underline;
+    text-align: center;
+    margin: 0 0 1rem 0;
+}

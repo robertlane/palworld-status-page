@@ -1,0 +1,7 @@
+{
+    "server-name": "Palworld Server",
+    "server-url": "localhost",
+    "server-port": "25575",
+    "server-password": "PalworldServerAdminPassword",
+    "server-timezone": "Time/Zone"
+}
