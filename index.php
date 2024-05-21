@@ -1,20 +1,24 @@
 <?php
+include 'src/api.php';
 $serverConfig = json_decode(file_get_contents("config.json"),true);
-$serverName = $serverConfig["server-name"];
-$serverURL = $serverConfig["server-url"];
-$serverPort = $serverConfig["server-port"];
-$serverPassword = $serverConfig["server-password"];
-$serverTimeZone = $serverConfig["server-timezone"];
+[
+    "serverName" => $serverName,
+    "serverURL" => $serverURL,
+    "serverPort" => $serverPort,
+    "serverUser" => $serverUser,
+    "serverPassword" => $serverPassword,
+    "serverTimezone" => $serverTimezone
+] = $serverConfig;
 $serverTime = date('m/d/Y h:i:s A');
-$serverStatus = false;
+$serverURL = "$serverURL:$serverPort";
 
-$serverInfo = exec("rcon -a $serverURL:$serverPort -p $serverPassword info");
-if (strpos($serverInfo, "Welcome") !== false) {$serverStatus = true;}
-$serverVersion = substr($serverInfo, strpos($serverInfo, "[") + 1, strpos($serverInfo, "]") - strpos($serverInfo, "[") - 1);
+$serverInfo = getServerInfo($serverURL, 'info', $serverUser, $serverPassword);
 
-$serverPlayersActive = shell_exec("rcon -a $serverURL:$serverPort -p $serverPassword showplayers");
-$playerArray = str_getcsv($serverPlayersActive, "\n");
-$playerHeaderShift = array_shift($playerArray);
+if ($serverInfo) {
+    $serverMetrics = getServerInfo($serverURL, 'metrics', $serverUser, $serverPassword);
+};
+
+$serverStatus = !is_null($serverInfo) ? true : false;
 
 ?>
 <!DOCTYPE html>
@@ -30,22 +34,25 @@ $playerHeaderShift = array_shift($playerArray);
         <div class="server-info">
             <h1><?php echo $serverName; ?></h1>
             <p><?php if ($serverStatus) {
-                 echo "Server is online running version $serverVersion"; 
+                 echo "Server is online running version ".$serverInfo["version"]; 
+                 } else {
+                    echo "Server is offline or unreachable";
                  }
                  ;?></p>
             <p>Last checked at:</p>
-            <p><?php echo "$serverTime $serverTimeZone"; ?></p>
+            <p><?php echo "$serverTime $serverTimezone"; ?></p>
         </div>
         
         <div class="players">
             <h2>Players Online</h2>
             <?php
-            if (!$playerArray) {
+            if (!$serverStatus || $serverMetrics["currentplayernum"] === 0) {
                 echo "<p>No Players Online</p>";
             } else {
+                $playerArray = getServerInfo($serverURL, 'players', $serverUser, $serverPassword);
                 foreach ($playerArray as $player) {
-                    $userEntries = str_getcsv($player, ",");
-                    echo "<p>$userEntries[0]</p>";
+                    ["name" => $name, "level" => $level] = $player[0];
+                    echo "<p><strong>$name</strong> - <em>Level $level</em></p>";
                 }
             }
             ?>
